@@ -3,14 +3,8 @@ var roleRepair = {
     /** @param {Creep} creep **/
     run: function (creep) {
 
-        if (creep.memory.repairing && creep.carry.energy == 0) {
-            creep.memory.repairing = false;
-            creep.memory.harvesting = false;
-        }
-        if (!creep.memory.repairing && creep.carry.energy == creep.carryCapacity) {
-            creep.memory.repairing = true;
-            creep.memory.harvesting = false;
-        }
+        if (creep.memory.repairing && creep.carry.energy == 0) creep.memory.repairing = false;
+        if (!creep.memory.repairing && creep.carry.energy == creep.carryCapacity) creep.memory.repairing = true;
 
         if (creep.memory.repairing) {
             var targets = creep.room.find(FIND_STRUCTURES, {
@@ -36,14 +30,6 @@ var roleRepair = {
             if (target) {
                 if (target.transferEnergy(creep, creep.energyCapacity) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(target);
-                }
-            }
-            else {
-                if (creep.carry.energy < creep.carryCapacity) {
-                    let source = Game.getObjectById(creep.memory.source);
-                    if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(source);
-                    }
                 }
             }
         }
