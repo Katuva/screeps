@@ -7,8 +7,8 @@ var constants = {
         harvester_source: 3,
         harvester_min: 2,
         // Per harvester
-        carry_harvester: 1,
-        upgrader: 2,
+        carry_harvester: 1.5,
+        upgrader: 1,
         builder: 1,
         repair: 2,
         // Per enemy

@@ -34,7 +34,7 @@ var spawner = {
                     this.queue_spawn.harvester();
                 }
 
-                if (carry < harvester * constants.totals.carry_harvester) {
+                if (carry < Math.round(harvester * constants.totals.carry_harvester)) {
                     this.queue_spawn.carry();
                 }
 

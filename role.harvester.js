@@ -32,12 +32,23 @@ var roleHarvester = {
             }
         }
         else if (!creep.memory.waiting) {
+            var target = creep.pos.findClosestByPath(FIND_MY_CREEPS, {
+                filter: (mycreep) => {
+                    return mycreep.memory.role == 'carry' &&
+                        mycreep.memory.waiting && !mycreep.memory.dump &&
+                        mycreep.carry.energy < mycreep.carryCapacity;
+                }
+            });
+            target.memory.target = creep.id;
+            target.waiting = false;
+            creep.memory.carry = target.id;
             creep.memory.waiting = true;
-            Memory.carry_queue.push(creep.id);
         }
-        // else if (creep.memory.waiting && !_.includes(Memory.carry_queue, creep.id)) {
-        //     Memory.carry_queue.push(creep.id);
-        // }
+        else if (creep.memory.waiting) {
+            let carry = Game.getObjectById(creep.memory.carry);
+
+            if (carry == null || carry.memory.target != creep.id) creep.memory.waiting = false;
+        }
     }
 };
 

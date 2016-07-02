@@ -2,14 +2,16 @@ var roleCarry = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        if (creep.carry.energy < creep.carryCapacity && creep.ticksToLive >= 200 && !creep.memory.target && !creep.memory.dump) {
-            if (Memory.carry_queue.length > 0) {
-                creep.memory.target = Memory.carry_queue.shift();
-            }
+        if (creep.memory.dump && creep.carry.energy == 0) {
+            creep.memory.dump = false;
+        }
+
+        if (creep.carry.energy < creep.carryCapacity && creep.ticksToLive >= 100 && !creep.memory.waiting && !creep.memory.dump) {
+            creep.memory.waiting = true;
         }
         else if (creep.memory.target) {
             if (creep.ticksToLive <= 50) {
-                Memory.carry_queue.push(creep.memory.target);
+                Game.getObjectById(creep.memory.target).memory.waiting = false;
                 console.log('not enough time to carry out carry order, killing myself');
                 creep.suicide();
             }
@@ -27,22 +29,30 @@ var roleCarry = {
                 creep.memory.target = undefined;
             }
         }
+        else if (creep.carry.energy == 0 && creep.ticksToLive <= 100) creep.suicide();
         else if (creep.carry.energy == creep.carryCapacity && !creep.memory.dump) {
             creep.memory.dump = true;
         }
         else if (creep.ticksToLive <= 150 || creep.memory.dump) {
             let target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) &&
+                    return (structure.structureType == STRUCTURE_EXTENSION ||
+                        structure.structureType == STRUCTURE_SPAWN) &&
                         structure.energy < structure.energyCapacity;
                 }
             });
 
+            if (target == null) {
+                target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (structure.structureType == STRUCTURE_CONTAINER) &&
+                            structure.energy < structure.energyCapacity;
+                    }
+                });
+            }
+
             if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target);
-            }
-            else {
-                if (creep.carry.energy == 0) creep.memory.dump = false;
             }
         }
     }
