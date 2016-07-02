@@ -2,7 +2,7 @@ var roleCarry = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        if (creep.carry.energy < creep.carryCapacity && creep.ticksToLive >= 200 && !creep.memory.target) {
+        if (creep.carry.energy < creep.carryCapacity && creep.ticksToLive >= 200 && !creep.memory.target && !creep.memory.dump) {
             if (Memory.carry_queue.length > 0) {
                 creep.memory.target = Memory.carry_queue.shift();
             }
