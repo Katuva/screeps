@@ -7,13 +7,13 @@ var constants = {
         harvester_source: 3,
         harvester_min: 2,
         // Per harvester
-        carry_harvester: 1.5,
-        upgrader: 1,
+        carry_harvester: 1.2,
+        upgrader: 2,
         builder: 1,
-        repair: 2,
+        repair: 1,
         // Per enemy
         melee_enemy: 2,
-        melee_min: 2
+        melee_min: 0
     },
     costs: {
         move: 50,
@@ -49,6 +49,10 @@ var constants = {
                 body: [ATTACK, ATTACK, ATTACK, ATTACK, MOVE, MOVE, MOVE, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH],
                 cost: 570
             }
+        ],
+        supply: [
+            {body: [CARRY, MOVE, MOVE], cost: 150},
+            {body: [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], cost: 300}
         ]
     }
 };

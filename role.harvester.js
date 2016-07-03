@@ -4,20 +4,22 @@ var roleHarvester = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        if (!_.has(creep.memory, 'source')) {
-            for (let source in Memory.sources) {
-                if (Memory.sources[source].harvesters.length < constants.totals.harvester_source) {
-                    Memory.sources[source].harvesters.push(creep.id);
-                    creep.memory.source = Memory.sources[source].id;
-                    break;
-                }
-                else {
-                    for (let i = 0; i < Memory.sources[source].harvesters.length; i++) {
-                        if (Game.getObjectById(Memory.sources[source].harvesters[i]) == null) {
-                            Memory.sources[source].harvesters.splice(i, 1);
-                            Memory.sources[source].harvesters.push(creep.id);
-                            creep.memory.source = Memory.sources[source].id;
-                            break;
+        break_out: {
+            if (!_.has(creep.memory, 'source')) {
+                for (let source in Memory.sources) {
+                    if (Memory.sources[source].harvesters.length < constants.totals.harvester_source) {
+                        Memory.sources[source].harvesters.push(creep.id);
+                        creep.memory.source = Memory.sources[source].id;
+                        break break_out;
+                    }
+                    else {
+                        for (let i = 0; i < Memory.sources[source].harvesters.length; i++) {
+                            if (Game.getObjectById(Memory.sources[source].harvesters[i]) == null) {
+                                Memory.sources[source].harvesters.splice(i, 1);
+                                Memory.sources[source].harvesters.push(creep.id);
+                                creep.memory.source = Memory.sources[source].id;
+                                break break_out;
+                            }
                         }
                     }
                 }
@@ -32,22 +34,36 @@ var roleHarvester = {
             }
         }
         else if (!creep.memory.waiting) {
-            var target = creep.pos.findClosestByPath(FIND_MY_CREEPS, {
+            let target = creep.pos.findClosestByPath(FIND_MY_CREEPS, {
                 filter: (mycreep) => {
                     return mycreep.memory.role == 'carry' &&
                         mycreep.memory.waiting && !mycreep.memory.dump &&
-                        mycreep.carry.energy < mycreep.carryCapacity;
+                        mycreep.carry.energy < mycreep.carryCapacity && !mycreep.memory.target;
                 }
             });
-            target.memory.target = creep.id;
-            target.waiting = false;
-            creep.memory.carry = target.id;
-            creep.memory.waiting = true;
+            if (target != null) {
+                target.memory.target = creep.id;
+                target.waiting = false;
+                creep.memory.carry = target.id;
+                creep.memory.waiting = true;
+            }
         }
         else if (creep.memory.waiting) {
-            let carry = Game.getObjectById(creep.memory.carry);
-
-            if (carry == null || carry.memory.target != creep.id) creep.memory.waiting = false;
+            let target = creep.pos.findClosestByPath(FIND_MY_CREEPS, {
+                filter: (mycreep) => {
+                    return mycreep.memory.role == 'carry' &&
+                        mycreep.memory.waiting && !mycreep.memory.dump &&
+                        mycreep.carry.energy < mycreep.carryCapacity && !mycreep.memory.target;
+                }
+            });
+            if (target != null && target.id != creep.memory.carry) {
+                target.memory.target = creep.id;
+                target.waiting = false;
+                let carry = Game.getObjectById(creep.memory.carry);
+                creep.memory.carry = target.id;
+                carry.memory.target = undefined;
+                carry.memory.waiting = true;
+            }
         }
     }
 };

@@ -8,6 +8,8 @@ var spawner = {
         let upgrader = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader').length + this.check_queue('upgrader');
         let builder = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder').length + this.check_queue('builder');
         let repair = _.filter(Game.creeps, (creep) => creep.memory.role == 'repair').length + this.check_queue('repair');
+        let supply = _.filter(Game.creeps, (creep) => creep.memory.role == 'supply').length + this.check_queue('supply');
+        let tower = _.filter(Game.structures, (structure) => structure.structureType == STRUCTURE_TOWER).length;
         let hostile = Game.spawns.Spawn1.room.find(FIND_HOSTILE_CREEPS).length;
 
         if (harvester < 1) this.queue_spawn.harvester(true);
@@ -30,6 +32,10 @@ var spawner = {
                 this.queue_spawn.melee();
             }
             else {
+                if (tower > 0 && supply <= 0) {
+                    this.queue_spawn.supply();
+                }
+
                 if (harvester < Memory.sources.length * constants.totals.harvester_source) {
                     this.queue_spawn.harvester();
                 }
@@ -61,7 +67,7 @@ var spawner = {
         base: function (type, role, basic) {
             if (basic) {
                 console.log('queued: ', constants.creeps[type][0].body, ' role: ', role);
-                Memory.build_queue.push({bp: constants.creeps[type][0].body, role: role});
+                Memory.build_queue.unshift({bp: constants.creeps[type][0].body, role: role});
             }
             else {
                 for (let i = constants.creeps[type].length - 1; i >= 0; i--) {
@@ -94,7 +100,10 @@ var spawner = {
             this.base('default', 'builder', basic);
         },
         repair: function (basic = false) {
-            this.base('default', 'repair', basic)
+            this.base('default', 'repair', basic);
+        },
+        supply: function (basic = false) {
+            this.base('supply', 'supply', basic);
         }
     },
     spawn: function () {

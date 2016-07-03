@@ -6,6 +6,12 @@ var roleCarry = {
             creep.memory.dump = false;
         }
 
+        if (creep.carry.energy == creep.carryCapacity) {
+            creep.memory.dump = true;
+            creep.memory.waiting = false;
+            creep.memory.target = undefined;
+        }
+
         if (creep.carry.energy < creep.carryCapacity && creep.ticksToLive >= 100 && !creep.memory.waiting && !creep.memory.dump) {
             creep.memory.waiting = true;
         }
@@ -46,7 +52,7 @@ var roleCarry = {
                 target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType == STRUCTURE_CONTAINER) &&
-                            structure.energy < structure.energyCapacity;
+                            structure.store.energy < structure.storeCapacity;
                     }
                 });
             }
