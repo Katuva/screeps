@@ -61,8 +61,10 @@ var roleHarvester = {
                 target.waiting = false;
                 let carry = Game.getObjectById(creep.memory.carry);
                 creep.memory.carry = target.id;
-                carry.memory.target = undefined;
-                carry.memory.waiting = true;
+                if (carry != null) {
+                    carry.memory.target = undefined;
+                    carry.memory.waiting = true;
+                }
             }
         }
     }
