@@ -49,23 +49,9 @@ var roleHarvester = {
             }
         }
         else if (creep.memory.waiting) {
-            let target = creep.pos.findClosestByPath(FIND_MY_CREEPS, {
-                filter: (mycreep) => {
-                    return mycreep.memory.role == 'carry' &&
-                        mycreep.memory.waiting && !mycreep.memory.dump &&
-                        mycreep.carry.energy < mycreep.carryCapacity && !mycreep.memory.target;
-                }
-            });
-            if (target != null && target.id != creep.memory.carry) {
-                target.memory.target = creep.id;
-                target.waiting = false;
-                let carry = Game.getObjectById(creep.memory.carry);
-                creep.memory.carry = target.id;
-                if (carry != null) {
-                    carry.memory.target = undefined;
-                    carry.memory.waiting = true;
-                }
-            }
+            let carry = Game.getObjectById(creep.memory.carry);
+
+            if (carry == null || carry.memory.target != creep.id) creep.memory.waiting = false;
         }
     }
 };

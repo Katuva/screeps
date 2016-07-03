@@ -35,11 +35,12 @@ var roleCarry = {
                 creep.memory.target = undefined;
             }
         }
-        else if (creep.carry.energy == 0 && creep.ticksToLive <= 100) creep.suicide();
+        else if (creep.carry.energy == 0 && creep.ticksToLive <= 75) creep.suicide();
         else if (creep.carry.energy == creep.carryCapacity && !creep.memory.dump) {
             creep.memory.dump = true;
         }
-        else if (creep.ticksToLive <= 150 || creep.memory.dump) {
+        else if ((creep.ticksToLive <= 100 && creep.carry.energy > 0) || creep.memory.dump) {
+            creep.memory.target = undefined;
             let target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (structure.structureType == STRUCTURE_EXTENSION ||
